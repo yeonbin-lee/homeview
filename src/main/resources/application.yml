@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://homeview-rds.czjfbvb9lfo4.ap-northeast-2.rds.amazonaws.com:3306/homeview4
+    username: admin
+    password: secret
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret: 34433kj4kj3bj4hjk6kelos9d9d9
+
