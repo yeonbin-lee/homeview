@@ -41,4 +41,13 @@ public class Member {
         this.role = role;
     }
 
+    public void update(String password, String nickname){
+        this.password = password;
+        this.nickname = nickname;
+    }
+
+    public String getRoleKey(){
+        return this.role.getKey();
+    }
+
 }
