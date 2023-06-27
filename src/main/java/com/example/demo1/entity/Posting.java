@@ -23,8 +23,7 @@ public class Posting {
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private Member member; // FK
 
-//    @Column(name = "user_id")
-//    private Long userId;
+    private String memberName;
 
     //간략화를 위해 게시판 종류 board_id는 생략
 
@@ -40,19 +39,19 @@ public class Posting {
 
     private int postHits; //조회수
 
-    @OneToMany(mappedBy = "posting", fetch = FetchType.EAGER) // 즉시로딩.. 실무에서는 지연로딩(LAZY)을 대부분 쓴다는데 일단 이걸로 놔둠
-    private List<Reply> comment = new ArrayList<>();
+    /*@OneToMany(mappedBy = "posting", fetch = FetchType.EAGER) // 즉시로딩.. 실무에서는 지연로딩(LAZY)을 대부분 쓴다는데 일단 이걸로 놔둠
+    private List<Reply> comment = new ArrayList<>();*/
 
 
     @Builder
-    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
+    public Posting(Long postId, Member member, String memberName, String title, String content, Timestamp postTime, int postHits) {
         this.postId = postId;
         this.member = member;
+        this.memberName = memberName;
         this.title = title;
         this.content = content;
         this.postTime = postTime;
         this.postHits = postHits;
-        this.comment = comment;
     }
 
 
@@ -62,5 +61,9 @@ public class Posting {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
     }
 }

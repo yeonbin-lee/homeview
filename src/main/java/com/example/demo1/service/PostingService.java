@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+import com.example.demo1.dto.PostingDTO;
 import com.example.demo1.dto.PostingUpdateDTO;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
@@ -47,29 +48,29 @@ public class PostingService {
     }
 
     // email 지정
-    @Transactional
-    public Posting save(Posting posting, String email) {
+/*    @Transactional
+    public Posting saveforTest(Posting posting, String email) {
 
         Member findMember = memberService.getInfo(email);
-        /*member = getMember(session);
-        Long userId = member.getId();*/
+        *//*member = getMember(session);
+        Long userId = member.getId();*//*
         log.info("post_id:" + posting.getPostId() + " findMember"+ findMember + " title: "+ posting.getTitle() +
                 " content" + posting.getContent() + " 시간" + posting.getPostTime());
         Posting newPosting = new Posting(posting.getPostId(), findMember, posting.getTitle(), posting.getContent(),
                 posting.getPostTime(), posting.getPostHits(), null);
 
         return postingRepository.save(newPosting);
-    }
+    }*/
 
-    /*@Transactional
+    @Transactional
     public Posting save(PostingDTO postingDTO, HttpSession session) {
 
         Member findMember = getMember(session);
-        Posting newPosting = new Posting(posting.getPostId(), findMember, posting.getTitle(), posting.getContent(),
-                posting.getPostTime(), posting.getPostHits(), null);
+        Posting newPosting = new Posting(postingDTO.getPostId(), findMember, findMember.getName(), postingDTO.getTitle(), postingDTO.getContent(),
+                postingDTO.getPostTime(), postingDTO.getPostHits());
 
         return postingRepository.save(newPosting);
-    }*/
+    }
 
     @Transactional
     public void update(Long postId, PostingUpdateDTO updateParam) {

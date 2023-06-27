@@ -5,6 +5,7 @@ import com.example.demo1.dto.PostingUpdateDTO;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.service.PostingService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -30,25 +31,6 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         this.postingService = postingService;
     }
 
-    // 여기서 하니까 오류나서 PostingService로 옮김...
-    /*
-    public PostingController(HttpSession session) throws Exception {
-        member = getMember(session);
-    }
-    */
-
-    /*private Member getMember(HttpSession session) {
-
-        //세션 객체 안에 있는 email정보 저장
-        String email = (String) session.getAttribute("email");
-        //log.info("회원정보 [session GET] email:" + email);
-
-        // email id로 찾은 member 객체 리턴
-        Member info = memberService.getInfo(email);
-        return info;
-    }*/
-
-
     @GetMapping
     public ResponseEntity index(Model model,
                                 @PageableDefault(size = 3, sort = "postId", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -62,17 +44,9 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    // 포스팅 저장 - email 지정
+    // 포스팅 저장
     @PostMapping("/add")
-    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, BindingResult bindingResult) {
-
-        log.info("[Controller] post_id:" + postingDTO.getPostId()  + " title: "+ postingDTO.getTitle() +
-                " content" + postingDTO.getContent() + " 시간" + postingDTO.getPostTime());
-
-        Member member = new Member(100L,"아아", "아아", "aaa@gmail.com", "1234@@aaaB", "ROLE_MEMBER");
-
-        Posting newPosting = new Posting(postingDTO.getPostId() , member, postingDTO.getTitle(), postingDTO.getContent(),
-                postingDTO.getPostTime(), postingDTO.getPostHits(), null);
+    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, HttpSession session, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             List<FieldError> list = bindingResult.getFieldErrors();
@@ -80,23 +54,9 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
                 return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
             }
         }
-        postingService.save(newPosting,"seon7129@naver.com");
-
-        return new ResponseEntity(HttpStatus.CREATED);
-    }
-    /*// 포스팅 저장
-    @PostMapping("/add")
-    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, HttpSession session, BindingResult bindingResult) {
-
-    if (bindingResult.hasErrors()) {
-            List<FieldError> list = bindingResult.getFieldErrors();
-            for(FieldError error : list) {
-                return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
-            }
-        }
         postingService.save(postingDTO, session);
         return new ResponseEntity(HttpStatus.CREATED);
-    }*/
+    }
 
     // 작성된 포스팅 열기
     @GetMapping("/{postId}")

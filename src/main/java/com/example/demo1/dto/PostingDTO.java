@@ -20,6 +20,7 @@ public class PostingDTO {
 
     private Long postId; //시퀀스
     private Member member;
+    private String memberName;
 
     @NotBlank(message = "제목을 입력해주세요")
     @Pattern(regexp = "^.{2,50}$", message = "2 ~ 50 자리의 제목을 작성해주세요")
@@ -31,7 +32,7 @@ public class PostingDTO {
 
     private Timestamp postTime;
     private int postHits;
-    private List<Reply> comment;
+    //private List<Reply> comment;
 
 
 
@@ -39,23 +40,25 @@ public class PostingDTO {
         return Posting.builder()
                 .postId(postId)
                 .member(member)
+                .memberName(memberName)
                 .title(title)
                 .content(content)
                 .postTime(postTime)
                 .postHits(0)
-                .comment(null)
+                /*.comment(null)*/
                 .build();
     }
 
     @Builder
-    public PostingDTO(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
+    public PostingDTO(Long postId, Member member, String memberName, String title, String content, Timestamp postTime, int postHits/*, List<Reply> comment*/) {
         this.postId = postId;
         this.member = member;
+        this.memberName = memberName;
         this.title = title;
         this.content = content;
         this.postTime = postTime;
         this.postHits = postHits;
-        this.comment = comment;
+        //this.comment = comment;
     }
 
 }
