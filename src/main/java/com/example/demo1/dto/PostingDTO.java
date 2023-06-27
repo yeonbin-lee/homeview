@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @Setter
 public class PostingDTO {
 
-    private Long post_id; //시퀀스
+    private Long postId; //시퀀스
     private Member member;
 
     @NotBlank(message = "제목을 입력해주세요")
@@ -36,7 +37,7 @@ public class PostingDTO {
 
     public Posting toEntity() {
         return Posting.builder()
-                .post_id(post_id)
+                .postId(postId)
                 .member(member)
                 .title(title)
                 .content(content)
@@ -47,8 +48,8 @@ public class PostingDTO {
     }
 
     @Builder
-    public PostingDTO(Long post_id, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
-        this.post_id = post_id;
+    public PostingDTO(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
+        this.postId = postId;
         this.member = member;
         this.title = title;
         this.content = content;

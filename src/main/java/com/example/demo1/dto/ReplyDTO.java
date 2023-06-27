@@ -16,7 +16,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Setter
 public class ReplyDTO {
-    private Long comment_id;
+
+    private Long commentId;
     private Posting posting; //FK
     private Member member; //FK
 
@@ -28,7 +29,7 @@ public class ReplyDTO {
 
     public Reply toEntity() {
         return Reply.builder()
-                .comment_id(comment_id)
+                .commentId(commentId)
                 .posting(posting)
                 .member(member)
                 .content(content)
@@ -37,8 +38,8 @@ public class ReplyDTO {
     }
 
     @Builder
-    public ReplyDTO(Long comment_id, Posting posting, Member member, String content, Timestamp commentTime) {
-        this.comment_id = comment_id;
+    public ReplyDTO(Long commentId, Posting posting, Member member, String content, Timestamp commentTime) {
+        this.commentId = commentId;
         this.posting = posting;
         this.member = member;
         this.content = content;

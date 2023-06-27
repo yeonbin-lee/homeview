@@ -7,22 +7,23 @@ import com.example.demo1.entity.Posting;
 import com.example.demo1.entity.Reply;
 import com.example.demo1.repository.ReplyRepository;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@RequiredArgsConstructor
 public class ReplyService {
+
     private final ReplyRepository replyRepository;
 
     private MemberService memberService;
-
-    public ReplyService(ReplyRepository replyRepository, MemberService memberService) {
-        this.replyRepository = replyRepository;
-        this.memberService = memberService;
-    }
 
     private Member getMember(HttpSession session) {
 
@@ -39,7 +40,7 @@ public class ReplyService {
     public Reply save(ReplyDTO replyDTO, HttpSession session) {
 
         Member findMember = getMember(session);
-        Reply newReply = new Reply(replyDTO.getComment_id(), replyDTO.getPosting(), findMember,
+        Reply newReply = new Reply(replyDTO.getCommentId(), replyDTO.getPosting(), findMember,
                 replyDTO.getContent(), replyDTO.getCommentTime());
 
         return replyRepository.save(newReply);
@@ -71,4 +72,5 @@ public class ReplyService {
     public void delete(Long commentId) {
         replyRepository.deleteById(commentId);
     }
+
 }

@@ -1,11 +1,12 @@
 package com.example.demo1.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.awt.*;
 
 @NoArgsConstructor
-@Getter @Setter
+@Getter
 @Entity
 public class Room {
 
@@ -17,10 +18,15 @@ public class Room {
     @Column(nullable = false, length = 50)
     private String name;
 
-    private int totalScore;
+    private double totalScore;
 
     @Column(nullable = false, length = 50)
     private String address;
 
     private Point location;
+
+
+    public void setTotalScore(double totalScore) {
+        this.totalScore = totalScore;
+    }
 }

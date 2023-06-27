@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/api/posting")
-public class PostingController {
+public class PostingController { // 스테이터스로만 보내는걸로. 문자든 숫자든
     private PostingService postingService;
 
     public PostingController(PostingService postingService) {
@@ -38,9 +38,11 @@ public class PostingController {
     */
 
     /*private Member getMember(HttpSession session) {
+
         //세션 객체 안에 있는 email정보 저장
         String email = (String) session.getAttribute("email");
         //log.info("회원정보 [session GET] email:" + email);
+
         // email id로 찾은 member 객체 리턴
         Member info = memberService.getInfo(email);
         return info;
@@ -64,12 +66,12 @@ public class PostingController {
     @PostMapping("/add")
     public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, BindingResult bindingResult) {
 
-        log.info("[Controller] post_id:" + postingDTO.getPost_id()  + " title: "+ postingDTO.getTitle() +
+        log.info("[Controller] post_id:" + postingDTO.getPostId()  + " title: "+ postingDTO.getTitle() +
                 " content" + postingDTO.getContent() + " 시간" + postingDTO.getPostTime());
 
         Member member = new Member(100L,"아아", "아아", "aaa@gmail.com", "1234@@aaaB", "ROLE_MEMBER");
 
-        Posting newPosting = new Posting(postingDTO.getPost_id() , member, postingDTO.getTitle(), postingDTO.getContent(),
+        Posting newPosting = new Posting(postingDTO.getPostId() , member, postingDTO.getTitle(), postingDTO.getContent(),
                 postingDTO.getPostTime(), postingDTO.getPostHits(), null);
 
         if (bindingResult.hasErrors()) {
@@ -85,6 +87,7 @@ public class PostingController {
     /*// 포스팅 저장
     @PostMapping("/add")
     public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, HttpSession session, BindingResult bindingResult) {
+
     if (bindingResult.hasErrors()) {
             List<FieldError> list = bindingResult.getFieldErrors();
             for(FieldError error : list) {

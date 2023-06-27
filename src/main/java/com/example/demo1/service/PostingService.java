@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PostingService {
+
     private final PostingRepository postingRepository;
     private final ReplyRepository replyRepository;
 
@@ -51,9 +53,9 @@ public class PostingService {
         Member findMember = memberService.getInfo(email);
         /*member = getMember(session);
         Long userId = member.getId();*/
-        log.info("post_id:" + posting.getPost_id() + " findMember"+ findMember + " title: "+ posting.getTitle() +
+        log.info("post_id:" + posting.getPostId() + " findMember"+ findMember + " title: "+ posting.getTitle() +
                 " content" + posting.getContent() + " 시간" + posting.getPostTime());
-        Posting newPosting = new Posting(posting.getPost_id(), findMember, posting.getTitle(), posting.getContent(),
+        Posting newPosting = new Posting(posting.getPostId(), findMember, posting.getTitle(), posting.getContent(),
                 posting.getPostTime(), posting.getPostHits(), null);
 
         return postingRepository.save(newPosting);
@@ -61,9 +63,11 @@ public class PostingService {
 
     /*@Transactional
     public Posting save(PostingDTO postingDTO, HttpSession session) {
+
         Member findMember = getMember(session);
-        Posting newPosting = new Posting(posting.getPost_id(), findMember, posting.getTitle(), posting.getContent(),
+        Posting newPosting = new Posting(posting.getPostId(), findMember, posting.getTitle(), posting.getContent(),
                 posting.getPostTime(), posting.getPostHits(), null);
+
         return postingRepository.save(newPosting);
     }*/
 
@@ -85,9 +89,14 @@ public class PostingService {
 
     // 댓글 목록
     @Transactional(readOnly = true)
-    public Optional<List<Reply>> list(Long postId) {
+    public List<Reply> list(Posting posting) {
 
-        return replyRepository.findByPosting(postId);
+        List<Reply> replies = replyRepository.findListByPosting(posting);
+        if (replies == null || replies.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+        return replies;
+
     }
 
 

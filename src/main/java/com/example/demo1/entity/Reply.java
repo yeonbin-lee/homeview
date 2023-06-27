@@ -1,4 +1,5 @@
 package com.example.demo1.entity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,14 +8,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.sql.Timestamp;
 
 @NoArgsConstructor
-@Getter @Setter
+@Getter
 @Entity
 @Table(name = "comment")
-public class Reply {
+public class Reply { // Comment는 키워드여서 Reply로 했음.
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long comment_id;
+    @Column(name="comment_id")
+    private Long commentId;
 
     //@JsonIgnore
     @ManyToOne
@@ -33,8 +35,8 @@ public class Reply {
 
 
     @Builder
-    public Reply(Long comment_id, Posting posting, Member member, String content, Timestamp commentTime) {
-        this.comment_id = comment_id;
+    public Reply(Long commentId, Posting posting, Member member, String content, Timestamp commentTime) {
+        this.commentId = commentId;
         this.posting = posting;
         this.member = member;
         this.content = content;

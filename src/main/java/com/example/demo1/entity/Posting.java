@@ -1,9 +1,7 @@
 package com.example.demo1.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -15,10 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "posting")
 public class Posting {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
-    private Long post_id; //시퀀스
+    private Long postId; //시퀀스
 
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
@@ -46,8 +45,8 @@ public class Posting {
 
 
     @Builder
-    public Posting(Long post_id, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
-        this.post_id = post_id;
+    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, List<Reply> comment) {
+        this.postId = postId;
         this.member = member;
         this.title = title;
         this.content = content;
