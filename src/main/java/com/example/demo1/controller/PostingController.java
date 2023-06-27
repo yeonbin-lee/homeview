@@ -2,10 +2,15 @@ package com.example.demo1.controller;
 
 import com.example.demo1.dto.PostingDTO;
 import com.example.demo1.dto.PostingUpdateDTO;
+import com.example.demo1.entity.Member;
+import com.example.demo1.entity.Posting;
+import com.example.demo1.service.MemberService;
 import com.example.demo1.service.PostingService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -22,19 +27,9 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/api/posting")
+@AllArgsConstructor
 public class PostingController { // 스테이터스로만 보내는걸로. 문자든 숫자든
     private PostingService postingService;
-
-    public PostingController(PostingService postingService) {
-        this.postingService = postingService;
-    }
-
-    @GetMapping
-    public ResponseEntity index(Model model,
-                                @PageableDefault(size = 3, sort = "postId", direction = Sort.Direction.DESC) Pageable pageable) {
-        model.addAttribute("postings", postingService.list(pageable));
-        return new ResponseEntity(HttpStatus.OK);
-    }
 
     // 새로운 작성 폼 열기
     @GetMapping("/add")
@@ -54,6 +49,15 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         }
         postingService.save(postingDTO);
         return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    // 포스팅 리스트
+    @GetMapping // /members?page=0&size=3&sort=id,desc&sort=username,desc  -> 요청은 이런 식으로. 여기서는 page만 따로 ? 뒤에 붙여주면 될듯. page는 0부터 시작
+    public Page<Posting> index( @PageableDefault(size = 5, sort = "postId", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return postingService.list(pageable); // 바디형식으로 전송해줘야할수도
+
+        //model.addAttribute("postings", postingService.list(pageable));
     }
 
     // 작성된 포스팅 열기
