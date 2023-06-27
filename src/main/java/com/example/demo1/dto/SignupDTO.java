@@ -1,14 +1,14 @@
 package com.example.demo1.dto;
 
 import com.example.demo1.entity.Member;
-import com.example.demo1.entity.Role;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
-@Builder
 @NoArgsConstructor
 @Setter
 public class SignupDTO {
@@ -32,7 +32,7 @@ public class SignupDTO {
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[$@$!%*#?&])[A-Za-z\\d$@$!%*#?&]{8,16}$", message = "비밀번호는 8~16자리수여야합니다. 영문 대소문자, 숫자, 특수문자를 1개 이상 포함해야 합니다.")
         private String password;
 
-        private Role role;
+        private String role;
 
         /* DTO -> Entity */
         public Member toEntity() {
@@ -42,18 +42,19 @@ public class SignupDTO {
                     .nickname(nickname)
                     .email(email)
                     .password(password)
-                    .role(Role.MEMBER)
+                    .role("ROLE_MEMBER")
                     .build();
+
         }
 
-        @Builder
-        public SignupDTO(Long id, String name, String nickname, String email, String password, Role role){
-            this.id = id;
-            this.name = name;
-            this.nickname = nickname;
-            this.email = email;
-            this.password = password;
-            this.role = role;
-        }
+//        @Builder
+//        public SignupDTO(Long id, String name, String nickname, String email, String password, Role role){
+//            this.id = id;
+//            this.name = name;
+//            this.nickname = nickname;
+//            this.email = email;
+//            this.password = password;
+//            this.role = role;
+//        }
 
 }

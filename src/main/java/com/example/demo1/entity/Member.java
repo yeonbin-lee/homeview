@@ -3,13 +3,19 @@ package com.example.demo1.entity;
 import com.example.demo1.repository.MemberRepository;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.sql.Array;
+import java.util.*;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @Table(name = "member")
-public class Member {
+public class Member{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +34,12 @@ public class Member {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+//    @Enumerated(EnumType.STRING)
+    private String role;
+
 
     @Builder
-    public Member(Long id, String name, String nickname, String email, String password, Role role){
+    public Member(Long id, String name, String nickname, String email, String password, String role){
         this.id = id;
         this.name = name;
         this.nickname = nickname;
@@ -46,8 +53,36 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public String getRoleKey(){
-        return this.role.getKey();
-    }
 
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        Set<GrantedAuthority> roles = new HashSet<>();
+//        roles.add(new SimpleGrantedAuthority(role.getKey()));
+//        return roles;
+//    }
+//
+//    @Override
+//    public String getUsername() {
+//        return this.email;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return true;
+//    }
 }

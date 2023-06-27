@@ -15,6 +15,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -26,16 +27,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public Member joinUser(SignupDTO signupDTO){
-        validateDuplicateMember(signupDTO.getEmail());
         signupDTO.setPassword(passwordEncoder.encode(signupDTO.getPassword()));
         return memberRepository.save(signupDTO.toEntity());
     }
 
-    private void validateDuplicateMember(String email){
-        boolean findMember = memberRepository.existsByEmail(email);
-        if(findMember != true){
-            throw new IllegalStateException("이미 가입된 회원입니다.");
-        }
+    public Boolean checkEmailDuplicate(String email) {
+        return memberRepository.existsByEmail(email);
     }
 
     public String loginUser(LoginDTO loginDTO){
@@ -64,7 +61,15 @@ public class MemberService {
         Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(() ->
                 new IllegalArgumentException("해당 회원이 존재하지않습니다.")
         );
-        member.update(passwordEncoder.encode(dto.getPassword()), dto.getNickname());
+
+        // 암호화되지않은 비번이 들어온다
+        if(passwordEncoder.matches(dto.getPassword(), member.getPassword())){
+            member.update(member.getPassword(), dto.getNickname());
+        }
+        else{
+            String encodePW = passwordEncoder.encode(dto.getPassword());
+            member.update(encodePW, dto.getNickname());
+        }
     }
 
 
@@ -75,7 +80,13 @@ public class MemberService {
         return true;
     }
 
+    public void deleteById(Long id) {
+        memberRepository.deleteById(id);
+    }
 
+    public List<Member> getAllMember(){
+        return memberRepository.findAll();
+    }
 
 
     //checkEmail --> 중복체크
