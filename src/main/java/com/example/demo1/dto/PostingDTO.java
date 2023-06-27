@@ -40,7 +40,6 @@ public class PostingDTO {
         return Posting.builder()
                 .postId(postId)
                 .member(member)
-                .memberName(memberName)
                 .title(title)
                 .content(content)
                 .postTime(postTime)

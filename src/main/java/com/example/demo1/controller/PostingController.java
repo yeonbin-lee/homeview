@@ -2,8 +2,6 @@ package com.example.demo1.controller;
 
 import com.example.demo1.dto.PostingDTO;
 import com.example.demo1.dto.PostingUpdateDTO;
-import com.example.demo1.entity.Member;
-import com.example.demo1.entity.Posting;
 import com.example.demo1.service.PostingService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -46,7 +44,7 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
 
     // 포스팅 저장
     @PostMapping("/add")
-    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, HttpSession session, BindingResult bindingResult) {
+    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             List<FieldError> list = bindingResult.getFieldErrors();
@@ -54,7 +52,7 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
                 return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
             }
         }
-        postingService.save(postingDTO, session);
+        postingService.save(postingDTO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

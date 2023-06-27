@@ -20,12 +20,8 @@ public class Posting {
     private Long postId; //시퀀스
 
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
-    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    @JoinColumn(name = "member_id")
     private Member member; // FK
-
-    private String memberName;
-
-    //간략화를 위해 게시판 종류 board_id는 생략
 
     @Column(nullable = false, length = 50)
     private String title;
@@ -44,10 +40,9 @@ public class Posting {
 
 
     @Builder
-    public Posting(Long postId, Member member, String memberName, String title, String content, Timestamp postTime, int postHits) {
+    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits) {
         this.postId = postId;
         this.member = member;
-        this.memberName = memberName;
         this.title = title;
         this.content = content;
         this.postTime = postTime;
@@ -63,7 +58,4 @@ public class Posting {
         this.content = content;
     }
 
-    public void setMemberName(String memberName) {
-        this.memberName = memberName;
-    }
 }

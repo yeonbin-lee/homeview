@@ -63,12 +63,9 @@ public class PostingService {
     }*/
 
     @Transactional
-    public Posting save(PostingDTO postingDTO, HttpSession session) {
-
-        Member findMember = getMember(session);
-        Posting newPosting = new Posting(postingDTO.getPostId(), findMember, findMember.getName(), postingDTO.getTitle(), postingDTO.getContent(),
+    public Posting save(PostingDTO postingDTO) {
+        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getTitle(), postingDTO.getContent(),
                 postingDTO.getPostTime(), postingDTO.getPostHits());
-
         return postingRepository.save(newPosting);
     }
 

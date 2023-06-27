@@ -3,19 +3,12 @@ package com.example.demo1.service;
 import com.example.demo1.dto.ReplyDTO;
 import com.example.demo1.dto.ReplyUpdateDTO;
 import com.example.demo1.entity.Member;
-import com.example.demo1.entity.Posting;
 import com.example.demo1.entity.Reply;
 import com.example.demo1.repository.ReplyRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
