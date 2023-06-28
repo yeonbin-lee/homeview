@@ -2,7 +2,6 @@ package com.example.demo1.dto;
 
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
-import com.example.demo1.entity.Reply;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
@@ -20,7 +19,7 @@ public class PostingDTO {
 
     private Long postId; //시퀀스
     private Member member;
-    private String memberName;
+    private String nickname;
 
     @NotBlank(message = "제목을 입력해주세요")
     @Pattern(regexp = "^.{2,50}$", message = "2 ~ 50 자리의 제목을 작성해주세요")
@@ -40,19 +39,19 @@ public class PostingDTO {
         return Posting.builder()
                 .postId(postId)
                 .member(member)
+                .nickname(nickname)
                 .title(title)
                 .content(content)
                 .postTime(postTime)
                 .postHits(0)
-                /*.comment(null)*/
                 .build();
     }
 
     @Builder
-    public PostingDTO(Long postId, Member member, String memberName, String title, String content, Timestamp postTime, int postHits/*, List<Reply> comment*/) {
+    public PostingDTO(Long postId, Member member, String nickname, String title, String content, Timestamp postTime, int postHits/*, List<Reply> comment*/) {
         this.postId = postId;
         this.member = member;
-        this.memberName = memberName;
+        this.nickname = nickname;
         this.title = title;
         this.content = content;
         this.postTime = postTime;

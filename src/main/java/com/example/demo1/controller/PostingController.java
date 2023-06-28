@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -64,15 +65,10 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
 
     //@GetMapping
     public List<Posting> index1() {// list로 찾으면 11개의 프록시가 만들어짐.. db에 저장된 게시글의 갯수가 11개면 맞을 것 같은데..
-
-        List<Posting> list = postingService.list();
-        for (Posting posting : list) {
-            System.out.println(posting);
-        }
-        return list;
+        return postingService.list();
     }
 
-    @GetMapping
+    //@GetMapping
     public ResponseEntity index2(final Pageable pageable) { // 현재 500 에러 남...
 
        /* public ResponseEntity retrievePosts(final Pageable pageable) {
@@ -95,6 +91,10 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         return "postings";
     }
 
+//    @GetMapping // view로 받는 방법..
+//    public List<Posting> index4() {
+//        return postingService.postingList();
+//    }
 
 
     /*@GetMapping // /api/posting?page=0&size=3&sort=id,desc&sort=username,desc  -> 요청은 이런 식으로. 여기서는 page만 따로 ? 뒤에 붙여주면 될듯. page는 0부터 시작
@@ -143,7 +143,7 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
 
     // 포스팅 저장
     @PostMapping("/add")
-    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, HttpSession session, BindingResult bindingResult) {
+    public ResponseEntity save(@Valid @RequestBody PostingDTO postingDTO, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             List<FieldError> list = bindingResult.getFieldErrors();

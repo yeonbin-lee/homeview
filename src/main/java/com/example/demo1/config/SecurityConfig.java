@@ -28,8 +28,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig{
-    private MemberService memberService;
-
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

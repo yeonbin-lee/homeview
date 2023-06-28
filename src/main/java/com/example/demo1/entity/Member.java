@@ -1,15 +1,8 @@
 package com.example.demo1.entity;
 
-import com.example.demo1.repository.MemberRepository;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.sql.Array;
-import java.util.*;
 
 @Entity
 @Getter

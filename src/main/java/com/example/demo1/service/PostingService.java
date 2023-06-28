@@ -4,10 +4,11 @@ import com.example.demo1.dto.PostingDTO;
 import com.example.demo1.dto.PostingUpdateDTO;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
-import com.example.demo1.entity.Reply;
 import com.example.demo1.repository.PostingRepository;
-import com.example.demo1.repository.ReplyRepository;
+import jakarta.persistence.*;
 import jakarta.servlet.http.HttpSession;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,14 +28,11 @@ import java.util.Optional;
 public class PostingService {
 
     private final PostingRepository postingRepository;
-    private final ReplyRepository replyRepository;
-
     private MemberService memberService;
 
     @Autowired
-    public PostingService(PostingRepository postingRepository, ReplyRepository replyRepository, MemberService memberService) {
+    public PostingService(PostingRepository postingRepository, MemberService memberService) {
         this.postingRepository = postingRepository;
-        this.replyRepository = replyRepository;
         this.memberService = memberService;
     }
 
@@ -65,7 +65,8 @@ public class PostingService {
     @Transactional
     public Posting save(PostingDTO postingDTO) {
 
-        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getMemberName(), postingDTO.getTitle(), postingDTO.getContent(),
+        log.info(postingDTO.getTitle() + "nickname은" + postingDTO.getNickname());
+        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getNickname(), postingDTO.getTitle(), postingDTO.getContent(),
                 postingDTO.getPostTime(), postingDTO.getPostHits());
 
         return postingRepository.save(newPosting);
@@ -88,15 +89,15 @@ public class PostingService {
         return postingRepository.findAll(pageable);
     }
 
-    @Transactional(readOnly = true)
+
     public List<Posting> list() {
 
         return postingRepository.findAll();
     }
 
     // 댓글 목록
-    @Transactional(readOnly = true)
-    public List<Reply> list(Posting posting) {
+/*    @Transactional(readOnly = true)
+    public List<Reply> replyList(Posting posting) {
 
         List<Reply> replies = replyRepository.findListByPosting(posting);
         if (replies == null || replies.isEmpty()) {
@@ -104,7 +105,7 @@ public class PostingService {
         }
         return replies;
 
-    }
+    }*/
 
 
     // 글 상세보기
