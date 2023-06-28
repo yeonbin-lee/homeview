@@ -19,7 +19,7 @@ public class Posting {
     @Column(name="post_id")
     private Long postId; //시퀀스
 
-    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
+    @ManyToOne(targetEntity = Member.class, fetch = FetchType.EAGER) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
     @JoinColumn(name = "member_id")
     private Member member; // FK
 
@@ -33,6 +33,8 @@ public class Posting {
     @CreationTimestamp //시간 자동 입력
     private Timestamp postTime;
 
+    private String memberName;
+
     private int postHits; //조회수
 
     /*@OneToMany(mappedBy = "posting", fetch = FetchType.EAGER) // 즉시로딩.. 실무에서는 지연로딩(LAZY)을 대부분 쓴다는데 일단 이걸로 놔둠
@@ -40,9 +42,10 @@ public class Posting {
 
 
     @Builder
-    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits) {
+    public Posting(Long postId, Member member, String memberName, String title, String content, Timestamp postTime, int postHits) {
         this.postId = postId;
         this.member = member;
+        this.memberName = memberName;
         this.title = title;
         this.content = content;
         this.postTime = postTime;

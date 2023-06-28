@@ -64,8 +64,10 @@ public class PostingService {
 
     @Transactional
     public Posting save(PostingDTO postingDTO) {
-        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getTitle(), postingDTO.getContent(),
+
+        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getMemberName(), postingDTO.getTitle(), postingDTO.getContent(),
                 postingDTO.getPostTime(), postingDTO.getPostHits());
+
         return postingRepository.save(newPosting);
     }
 
@@ -81,8 +83,15 @@ public class PostingService {
 
     // 글 목록
     @Transactional(readOnly = true)
-    public Page<Posting> list(Pageable pageable) {
+    public Page<Posting> page(Pageable pageable) {
+
         return postingRepository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Posting> list() {
+
+        return postingRepository.findAll();
     }
 
     // 댓글 목록
