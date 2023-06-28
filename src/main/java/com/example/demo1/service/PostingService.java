@@ -66,7 +66,7 @@ public class PostingService {
     public Posting save(PostingDTO postingDTO) {
 
         log.info(postingDTO.getTitle() + "nickname은" + postingDTO.getNickname());
-        Posting newPosting = new Posting(postingDTO.getPostId(), postingDTO.getMember(), postingDTO.getNickname(), postingDTO.getTitle(), postingDTO.getContent(),
+        Posting newPosting = new Posting(postingDTO.getPost_id(), postingDTO.getMember(), postingDTO.getNickname(), postingDTO.getTitle(), postingDTO.getContent(),
                 postingDTO.getPostTime(), postingDTO.getPostHits());
 
         return postingRepository.save(newPosting);
@@ -83,15 +83,14 @@ public class PostingService {
     }
 
     // 글 목록
-    @Transactional(readOnly = true)
-    public Page<Posting> page(Pageable pageable) {
-
-        return postingRepository.findAll(pageable);
-    }
+//    @Transactional(readOnly = true)
+//    public Page<Posting> page(Pageable pageable) {
+//
+//        return postingRepository.findAll(pageable);
+//    }
 
 
     public List<Posting> list() {
-
         return postingRepository.findAll();
     }
 

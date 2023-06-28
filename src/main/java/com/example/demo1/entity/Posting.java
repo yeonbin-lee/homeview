@@ -15,9 +15,9 @@ public class Posting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
-    private Long postId; //시퀀스
+    private Long post_id; //시퀀스
 
-    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
+    @ManyToOne(targetEntity = Member.class, fetch = FetchType.EAGER) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
     @JoinColumn(name = "member_id")
     private Member member; // FK
 
@@ -43,8 +43,8 @@ public class Posting {
 
 
     @Builder
-    public Posting(Long postId, Member member, String nickname, String title, String content, Timestamp postTime, int postHits) {
-        this.postId = postId;
+    public Posting(Long post_id, Member member, String nickname, String title, String content, Timestamp postTime, int postHits) {
+        this.post_id = post_id;
         this.member = member;
         this.nickname = nickname;
         this.title = title;

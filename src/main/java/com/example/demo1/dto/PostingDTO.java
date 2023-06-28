@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 public class PostingDTO {
 
-    private Long postId; //시퀀스
+    private Long post_id; //시퀀스
     private Member member;
     private String nickname;
 
@@ -37,7 +37,7 @@ public class PostingDTO {
 
     public Posting toEntity() {
         return Posting.builder()
-                .postId(postId)
+                .post_id(post_id)
                 .member(member)
                 .nickname(nickname)
                 .title(title)
@@ -48,8 +48,8 @@ public class PostingDTO {
     }
 
     @Builder
-    public PostingDTO(Long postId, Member member, String nickname, String title, String content, Timestamp postTime, int postHits/*, List<Reply> comment*/) {
-        this.postId = postId;
+    public PostingDTO(Long post_id, Member member, String nickname, String title, String content, Timestamp postTime, int postHits/*, List<Reply> comment*/) {
+        this.post_id = post_id;
         this.member = member;
         this.nickname = nickname;
         this.title = title;
