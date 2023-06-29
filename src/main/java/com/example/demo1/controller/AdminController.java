@@ -1,7 +1,9 @@
 package com.example.demo1.controller;
 
 import com.example.demo1.entity.Member;
+import com.example.demo1.entity.Posting;
 import com.example.demo1.service.MemberService;
+import com.example.demo1.service.PostingService;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,8 @@ import java.util.List;
 @ResponseBody
 public class AdminController {
     private MemberService memberService;
+
+    private PostingService postingService;
 
     public Member checkAdmin(HttpSession session){
         log.info("세션값 = " + session);
@@ -45,9 +49,17 @@ public class AdminController {
     public List<Member> getAllMembers(HttpSession session){
         Member info = checkAdmin(session);
         if(info.getRole().equals("ADMIN")){
-            return memberService.getAllMember(); // 바디형식으로 전송해줘야할수도
+            return memberService.getAllMember();// 바디형식으로 전송해줘야할수도
         }else{
             return null;// 변경필요
+        }
+    }
+
+    @DeleteMapping("/posting/{post_id}")
+    public void deletePosting(@PathVariable Long post_id, HttpSession session){
+        Member info = checkAdmin(session);
+        if(info.getRole().equals("ADMIN")){
+            postingService.delete(post_id);
         }
     }
 
@@ -59,32 +71,6 @@ public class AdminController {
         }
     }
 
-
-
-//    // 유저 삭제
-//    @DeleteMapping("/{email}")
-//    public ResponseEntity deleteUser(@PathVariable String email) {
-//        Member deleteUser = memberService.deleteByEmail(email);
-//
-//        if(deleteUser == null) {
-//            throw new IllegalArgumentException("유저를 찾을 수 없습니다.");
-//        }
-//        return ResponseEntity.ok(deleteUser.getEmail());
-//    }
-
-//    @DeleteMapping("/{email}")
-//    public ModelAndView deleteUser(@PathVariable String email, HttpServletResponse response) throws IOException {
-//        Member deleteUser = memberService.deleteByEmail(email);
-//
-//        if(deleteUser == null) {
-//            response.sendError(HttpServletResponse.SC_NOT_FOUND, "유저를 찾을 수 없습니다.");
-//            return new ModelAndView();
-//            // response.setStatus~
-//        }
-//        response.setStatus(HttpServletResponse.SC_OK);
-//        return new ModelAndView();
-////        return deleteUser;
-//    }
 
     // 글 삭제
     // 리뷰 삭제
