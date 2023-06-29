@@ -1,5 +1,6 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.dto.MemberResponseDTO;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.service.MemberService;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -46,7 +49,7 @@ public class AdminController {
     }
 
     @GetMapping("/list")
-    public List<Member> getAllMembers(HttpSession session){
+    public List<MemberResponseDTO> getAllMembers(HttpSession session){
         Member info = checkAdmin(session);
         if(info.getRole().equals("ADMIN")){
             return memberService.getAllMember();// 바디형식으로 전송해줘야할수도
@@ -54,6 +57,8 @@ public class AdminController {
             return null;// 변경필요
         }
     }
+
+
 
     @DeleteMapping("/posting/{post_id}")
     public void deletePosting(@PathVariable Long post_id, HttpSession session){

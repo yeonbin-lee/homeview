@@ -1,6 +1,7 @@
 package com.example.demo1.service;
 
 import com.example.demo1.dto.LoginDTO;
+import com.example.demo1.dto.MemberResponseDTO;
 import com.example.demo1.dto.SignupDTO;
 import com.example.demo1.dto.UserRequestDto;
 import com.example.demo1.entity.Member;
@@ -82,8 +83,23 @@ public class MemberService {
     }
     
 
-    public List<Member> getAllMember(){
-        return memberRepository.findAll();
+    public List<MemberResponseDTO> getAllMember(){
+        //return memberRepository.findAll();
+        List<Member> members = memberRepository.findAll();
+        List<MemberResponseDTO> memberDtoList = new ArrayList<>();
+        for (Member member : members) {
+            MemberResponseDTO memberResponseDTO = MemberResponseDTO.builder()
+                    .id(member.getId())
+                    .name(member.getName())
+                    .nickname(member.getNickname())
+                    .email(member.getEmail())
+                    .role(member.getRole())
+                    .build();
+
+            memberDtoList.add(memberResponseDTO);
+        }
+        return memberDtoList;
+
     }
 
 
