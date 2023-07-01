@@ -1,4 +1,4 @@
-package com.example.demo1.dto;
+package com.example.demo1.dto.posting;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;

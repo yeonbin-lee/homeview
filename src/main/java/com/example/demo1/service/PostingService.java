@@ -1,23 +1,17 @@
 package com.example.demo1.service;
 
-import com.example.demo1.dto.PostingDTO;
-import com.example.demo1.dto.PostingUpdateDTO;
-import com.example.demo1.entity.Member;
+import com.example.demo1.dto.posting.PostingContentResponseDTO;
+import com.example.demo1.dto.posting.PostingSaveDTO;
+import com.example.demo1.dto.posting.PostingResponseDTO;
+import com.example.demo1.dto.posting.PostingUpdateDTO;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.repository.PostingRepository;
-import jakarta.persistence.*;
-import jakarta.servlet.http.HttpSession;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,13 +22,8 @@ import java.util.Optional;
 public class PostingService {
 
     private final PostingRepository postingRepository;
-    private MemberService memberService;
 
-    @Autowired
-    public PostingService(PostingRepository postingRepository, MemberService memberService) {
-        this.postingRepository = postingRepository;
-        this.memberService = memberService;
-    }
+/*    private MemberService memberService;
 
     private Member getMember(HttpSession session) {
 
@@ -45,29 +34,19 @@ public class PostingService {
         // email id로 찾은 member 객체 리턴
         Member info = memberService.getInfo(email);
         return info;
-    }
-
-    // email 지정
-/*    @Transactional
-    public Posting saveforTest(Posting posting, String email) {
-
-        Member findMember = memberService.getInfo(email);
-        *//*member = getMember(session);
-        Long userId = member.getId();*//*
-        log.info("post_id:" + posting.getPostId() + " findMember"+ findMember + " title: "+ posting.getTitle() +
-                " content" + posting.getContent() + " 시간" + posting.getPostTime());
-        Posting newPosting = new Posting(posting.getPostId(), findMember, posting.getTitle(), posting.getContent(),
-                posting.getPostTime(), posting.getPostHits(), null);
-
-        return postingRepository.save(newPosting);
     }*/
 
     @Transactional
-    public Posting save(PostingDTO postingDTO) {
+    public Posting save(PostingSaveDTO postingSaveDTO) {
 
-        log.info(postingDTO.getTitle() + "nickname은" + postingDTO.getNickname());
-        Posting newPosting = new Posting(postingDTO.getPost_id(), postingDTO.getMember(), postingDTO.getNickname(), postingDTO.getTitle(), postingDTO.getContent(),
-                postingDTO.getPostTime(), postingDTO.getPostHits());
+        Posting newPosting = new Posting(
+                postingSaveDTO.getPostId(),
+                postingSaveDTO.getMember(),
+                postingSaveDTO.getTitle(),
+                postingSaveDTO.getContent(),
+                postingSaveDTO.getPostTime(),
+                postingSaveDTO.getPostHits(),
+                postingSaveDTO.getPostLikes());
 
         return postingRepository.save(newPosting);
     }
@@ -83,15 +62,23 @@ public class PostingService {
     }
 
     // 글 목록
-//    @Transactional(readOnly = true)
-//    public Page<Posting> page(Pageable pageable) {
-//
-//        return postingRepository.findAll(pageable);
-//    }
+    public List<PostingResponseDTO> list() {
+        List<Posting> postings = postingRepository.findAll();
+        List<PostingResponseDTO> postingResponseList = new ArrayList<>();
+        for (Posting posting : postings) {
+            PostingResponseDTO postingResponseDTO = PostingResponseDTO.builder()
+                    .postId(posting.getPostId())
+                    .memberId(posting.getMember().getId())
+                    .memberNickname(posting.getMember().getNickname())
+                    .title(posting.getTitle())
+                    .postTime(posting.getPostTime())
+                    .postHits(posting.getPostHits())
+                    .postLikes(posting.getPostLikes())
+                    .build();
 
-
-    public List<Posting> list() {
-        return postingRepository.findAll();
+            postingResponseList.add(postingResponseDTO);
+        }
+        return postingResponseList;
     }
 
     // 댓글 목록
@@ -109,8 +96,21 @@ public class PostingService {
 
     // 글 상세보기
     @Transactional(readOnly = true)
-    public Posting content(Long postId) {
-        return postingRepository.findById(postId)
+    public PostingContentResponseDTO content(Long postId) {
+
+        Optional<Posting> posting = postingRepository.findById(postId);
+        Optional<PostingContentResponseDTO> postingResponse = Optional.ofNullable(PostingContentResponseDTO.builder()
+                .postId(posting.get().getPostId())
+                .memberId(posting.get().getMember().getId())
+                .memberNickname(posting.get().getMember().getNickname())
+                .title(posting.get().getTitle())
+                .content(posting.get().getContent())
+                .postTime(posting.get().getPostTime())
+                .postHits(posting.get().getPostHits() + 1) // 조회수 1 증가
+                .postLikes(posting.get().getPostLikes())
+                .build());
+
+        return postingResponse
                 .orElseThrow(() -> { // 영속화
                     return new IllegalArgumentException("글 상세보기 실패 : postId를 찾을 수 없습니다.");
                 });

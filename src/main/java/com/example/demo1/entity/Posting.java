@@ -15,14 +15,11 @@ public class Posting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="post_id")
-    private Long post_id; //시퀀스
+    private Long postId; //시퀀스
 
     @ManyToOne(targetEntity = Member.class, fetch = FetchType.EAGER) //Many = Posting, One = Member, 한 계정에 여러 개 글 작성
     @JoinColumn(name = "member_id")
     private Member member; // FK
-
-    @Column(name="nickname")
-    private String nickname;
 
     //간략화를 위해 게시판 종류 board_id는 생략
 
@@ -38,20 +35,23 @@ public class Posting {
 
     private int postHits; //조회수
 
+    private int postLikes; // 좋아요수
+
     /*@OneToMany(mappedBy = "posting", fetch = FetchType.EAGER) // 즉시로딩.. 실무에서는 지연로딩(LAZY)을 대부분 쓴다는데 일단 이걸로 놔둠
     private List<Reply> comment = new ArrayList<>();*/ // posting에 reply를 등록하는게 아니라 reply에 posting을 등록하기
 
 
     @Builder
-    public Posting(Long post_id, Member member, String nickname, String title, String content, Timestamp postTime, int postHits) {
-        this.post_id = post_id;
+    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, int postLikes) {
+        this.postId = postId;
         this.member = member;
-        this.nickname = nickname;
         this.title = title;
         this.content = content;
         this.postTime = postTime;
         this.postHits = postHits;
+        this.postLikes = postLikes;
     }
+
 
 
     public void setTitle(String title) {
@@ -62,7 +62,4 @@ public class Posting {
         this.content = content;
     }
 
-    public void setMemberName(String nickname) {
-        this.nickname = nickname;
-    }
 }

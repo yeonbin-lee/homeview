@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface PostingRepository extends JpaRepository<Posting, Long> {
-    @Query("select p from Posting p order by  p.post_id desc")
+    @Query("select p from Posting p order by  p.postId desc")
     List<Posting> findAll();
 }
