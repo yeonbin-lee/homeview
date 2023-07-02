@@ -13,4 +13,8 @@ import java.util.List;
 public interface PostingRepository extends JpaRepository<Posting, Long> {
     @Query("select p from Posting p order by  p.postId desc")
     List<Posting> findAll();
+
+    //List<Posting> findByTitleContaining(String keyword);
+
+    Page<Posting> findByTitleContaining(String keyword, Pageable pageable);
 }

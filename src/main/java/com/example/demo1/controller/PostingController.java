@@ -1,13 +1,20 @@
 package com.example.demo1.controller;
 
+import com.example.demo1.dto.posting.LikeSaveDTO;
 import com.example.demo1.dto.posting.PostingContentResponseDTO;
 import com.example.demo1.dto.posting.PostingSaveDTO;
 import com.example.demo1.dto.posting.PostingResponseDTO;
 import com.example.demo1.dto.posting.PostingUpdateDTO;
+import com.example.demo1.entity.Posting;
+import com.example.demo1.service.LikeService;
 import com.example.demo1.service.PostingService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,7 +29,9 @@ import java.util.List;
 @AllArgsConstructor
 @ResponseBody
 public class PostingController { // 스테이터스로만 보내는걸로. 문자든 숫자든
+
     private PostingService postingService;
+    private LikeService likeService;
 
 
     @GetMapping("/list")
@@ -55,6 +64,7 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
     @GetMapping("/{postId}")
     public ResponseEntity findById(@PathVariable Long postId) {
         PostingContentResponseDTO posting = postingService.content(postId);
+        postingService.updatePostHits(postId);
         return new ResponseEntity(posting, HttpStatus.OK);
     }
 
@@ -79,11 +89,50 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         return new ResponseEntity(HttpStatus.OK);
     }
 
+
+//    // 좋아요 클릭
+//    @PostMapping("/like/save")
+//    public ResponseEntity saveLike(@Valid @RequestBody LikeSaveDTO likeSaveDTO, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            List<FieldError> list = bindingResult.getFieldErrors();
+//            for(FieldError error : list) {
+//                return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
+//            }
+//        }
+//        likeService.save(likeSaveDTO);
+//        return new ResponseEntity(HttpStatus.CREATED);
+//    }
+
+
+    // 좋아요 삭제
+    @GetMapping("/like/delete")
+    public ResponseEntity deleteLike(@PathVariable Long likeId) {
+        likeService.delete(likeId);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
+    }
+
+
+
     // 포스팅 삭제
     @DeleteMapping("/{postId}")
     public ResponseEntity deleteById(@PathVariable Long postId) {
         postingService.delete(postId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
+
+    /*타이틀 keyword로 검색*/
+//    @GetMapping("/search/{keyword}")
+//    public List<Posting> search(@PathVariable String keyword){
+//        List<Posting> searchList = postingService.search(keyword);
+//        return searchList;
+//    }
+
+    @GetMapping("/search/{keyword}")
+    public Page<Posting> search(@PathVariable String keyword, @PageableDefault(sort = "postId", direction = Sort.Direction.DESC)Pageable pageable){
+        Page<Posting> searchList = postingService.search(keyword, pageable);
+        return searchList;
+    }
+
+
 
 }

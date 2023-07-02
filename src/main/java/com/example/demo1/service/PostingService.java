@@ -8,7 +8,8 @@ import com.example.demo1.entity.Posting;
 import com.example.demo1.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,7 @@ public class PostingService {
                 });
         posting.setTitle(updateParam.getTitle());
         posting.setContent(updateParam.getContent());
+        postingRepository.save(posting);
     }
 
     // 글 목록
@@ -99,6 +101,7 @@ public class PostingService {
     public PostingContentResponseDTO content(Long postId) {
 
         Optional<Posting> posting = postingRepository.findById(postId);
+
         Optional<PostingContentResponseDTO> postingResponse = Optional.ofNullable(PostingContentResponseDTO.builder()
                 .postId(posting.get().getPostId())
                 .memberId(posting.get().getMember().getId())
@@ -116,8 +119,36 @@ public class PostingService {
                 });
     }
 
+    public void updatePostHits(Long postId) {
+
+        Posting posting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });
+        posting.setPostHits(posting.getPostHits() + 1);
+        postingRepository.save(posting);
+    }
+
+/*
+    public void updatePostLikes(Long postId) {
+        Posting posting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });
+        posting.setPostLikes(posting.getPostLikes() + 1);
+        postingRepository.save(posting);
+    }
+*/
+
     @Transactional
-    public void delete(Long post_id) {
-        postingRepository.deleteById(post_id);
+    public void delete(Long postId) {
+        postingRepository.deleteById(postId);
+    }
+
+    @Transactional
+    public Page<Posting> search(String keyword, Pageable pageable){
+        //List<Posting> postsList = postingRepository.findByTitleContaining(keyword);
+        Page<Posting> postsList = postingRepository.findByTitleContaining(keyword, pageable);
+        return postsList;
     }
 }
