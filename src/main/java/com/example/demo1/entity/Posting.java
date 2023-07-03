@@ -21,7 +21,9 @@ public class Posting {
     @JoinColumn(name = "member_id")
     private Member member; // FK
 
-    //간략화를 위해 게시판 종류 board_id는 생략
+    @ManyToOne(targetEntity = Category.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category; // FK
 
     @Column(nullable = false, length = 50)
     private String title;
@@ -37,21 +39,17 @@ public class Posting {
 
     private int postLikes; // 좋아요수
 
-    /*@OneToMany(mappedBy = "posting", fetch = FetchType.EAGER) // 즉시로딩.. 실무에서는 지연로딩(LAZY)을 대부분 쓴다는데 일단 이걸로 놔둠
-    private List<Reply> comment = new ArrayList<>();*/ // posting에 reply를 등록하는게 아니라 reply에 posting을 등록하기
-
 
     @Builder
-    public Posting(Long postId, Member member, String title, String content, Timestamp postTime, int postHits, int postLikes) {
-        this.postId = postId;
+    public Posting(Member member, Category category, String title, String content, Timestamp postTime, int postHits, int postLikes) {
         this.member = member;
+        this.category = category;
         this.title = title;
         this.content = content;
         this.postTime = postTime;
         this.postHits = postHits;
         this.postLikes = postLikes;
     }
-
 
 
     public void setTitle(String title) {

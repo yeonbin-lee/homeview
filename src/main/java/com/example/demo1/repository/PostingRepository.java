@@ -17,4 +17,5 @@ public interface PostingRepository extends JpaRepository<Posting, Long> {
     //List<Posting> findByTitleContaining(String keyword);
 
     Page<Posting> findByTitleContaining(String keyword, Pageable pageable);
+
 }

@@ -1,5 +1,6 @@
 package com.example.demo1.dto.posting;
 
+import com.example.demo1.entity.Category;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
 import jakarta.validation.constraints.NotBlank;
@@ -15,8 +16,8 @@ import java.sql.Timestamp;
 @Setter
 public class PostingSaveDTO {
 
-    private Long postId; //시퀀스
-    private Member member;
+    private Long memberId;
+    private Long categoryId;
 
     @NotBlank(message = "제목을 입력해주세요")
     @Pattern(regexp = "^.{2,50}$", message = "2 ~ 50 자리의 제목을 작성해주세요")
@@ -29,12 +30,12 @@ public class PostingSaveDTO {
     private Timestamp postTime;
     private int postHits;
     private int postLikes;
-    //private List<Reply> comment;
 
-    public Posting toEntity() {
+
+    public Posting toEntity(Member member, Category category) {
         return Posting.builder()
-                .postId(postId)
                 .member(member)
+                .category(category)
                 .title(title)
                 .content(content)
                 .postTime(postTime)

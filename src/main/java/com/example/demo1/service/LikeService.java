@@ -2,7 +2,7 @@ package com.example.demo1.service;
 
 
 import com.example.demo1.dto.posting.LikeSaveDTO;
-import com.example.demo1.entity.Like;
+import com.example.demo1.entity.Likes;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.repository.LikeRepository;
@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
 
     private final LikeRepository likeRepository;
-    private PostingRepository postingRepository;
-    private MemberRepository memberRepository;
+    private final PostingRepository postingRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void save(LikeSaveDTO likeSaveDTO) {
@@ -33,10 +33,12 @@ public class LikeService {
                     return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
                 });
 
-        Like newLike = new Like(
-                likeSaveDTO.getLikeId(),
-                newMember,
-                newPosting);
+        // 이미 좋아요되어있으면 에러 반환
+        if (likeRepository.findByMemberAndPosting(newMember, newPosting).isPresent()) {
+            throw new IllegalArgumentException("이미 좋아요한 포스팅 입니다.");
+        }
+
+        Likes newLike = likeSaveDTO.toEntity(newMember, newPosting);
         likeRepository.save(newLike);
 
 
@@ -52,7 +54,7 @@ public class LikeService {
     @Transactional
     public void delete(Long likeId) {
 
-        Like findLike = likeRepository.findById(likeId)
+        Likes findLike = likeRepository.findById(likeId)
                 .orElseThrow(() -> { // 영속화
                     return new IllegalArgumentException("글 찾기 실패 : likeId를 찾을 수 없습니다.");
                 });

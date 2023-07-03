@@ -90,22 +90,22 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
     }
 
 
-//    // 좋아요 클릭
-//    @PostMapping("/like/save")
-//    public ResponseEntity saveLike(@Valid @RequestBody LikeSaveDTO likeSaveDTO, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            List<FieldError> list = bindingResult.getFieldErrors();
-//            for(FieldError error : list) {
-//                return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
-//            }
-//        }
-//        likeService.save(likeSaveDTO);
-//        return new ResponseEntity(HttpStatus.CREATED);
-//    }
+    // 좋아요 클릭
+    @PostMapping("/like/save")
+    public ResponseEntity saveLike(@Valid @RequestBody LikeSaveDTO likeSaveDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<FieldError> list = bindingResult.getFieldErrors();
+            for(FieldError error : list) {
+                return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
+            }
+        }
+        likeService.save(likeSaveDTO);
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
 
 
     // 좋아요 삭제
-    @GetMapping("/like/delete")
+    @GetMapping("/like/{likeId}/delete")
     public ResponseEntity deleteLike(@PathVariable Long likeId) {
         likeService.delete(likeId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
@@ -114,25 +114,16 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
 
 
     // 포스팅 삭제
-    @DeleteMapping("/{postId}")
+    @GetMapping("/{postId}/delete")
     public ResponseEntity deleteById(@PathVariable Long postId) {
         postingService.delete(postId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    /*타이틀 keyword로 검색*/
-//    @GetMapping("/search/{keyword}")
-//    public List<Posting> search(@PathVariable String keyword){
-//        List<Posting> searchList = postingService.search(keyword);
-//        return searchList;
-//    }
-
-    @GetMapping("/search/{keyword}")
-    public Page<Posting> search(@PathVariable String keyword, @PageableDefault(sort = "postId", direction = Sort.Direction.DESC)Pageable pageable){
+    @GetMapping("/search")
+    public Page<Posting> search(String keyword, @PageableDefault(sort = "postId", direction = Sort.Direction.DESC) Pageable pageable){
         Page<Posting> searchList = postingService.search(keyword, pageable);
         return searchList;
     }
-
-
 
 }
