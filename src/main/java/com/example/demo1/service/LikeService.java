@@ -1,6 +1,5 @@
 package com.example.demo1.service;
 
-
 import com.example.demo1.dto.posting.LikeSaveDTO;
 import com.example.demo1.entity.Likes;
 import com.example.demo1.entity.Member;
@@ -20,53 +19,87 @@ public class LikeService {
     private final PostingRepository postingRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional
-    public void save(LikeSaveDTO likeSaveDTO) {
 
-        Member newMember = memberRepository.findById(likeSaveDTO.getMemberId())
+    @Transactional
+    public boolean save(LikeSaveDTO likeSaveDTO) {
+
+        Member newMember = makeNewMember(likeSaveDTO.getMemberId());
+        Posting newPosting = makeNewPosting(likeSaveDTO.getPostId());
+
+        boolean alreadyChecked = isAlreadyChecked(likeSaveDTO.getMemberId(), likeSaveDTO.getPostId());
+        if (alreadyChecked == false) {
+            Likes newLike = likeSaveDTO.toEntity(newMember, newPosting);
+            likeRepository.save(newLike);
+
+            Posting posting = makeNewPosting(newLike.getPosting().getPostId());
+            posting.setPostLikes(posting.getPostLikes() + 1);
+            postingRepository.save(posting);
+
+            return true;
+        }
+        return false;
+    }
+
+    // 이미 좋아요한 포스팅일 때
+    public boolean isAlreadyChecked(Long memberId, Long postId) {
+
+        Member newMember = makeNewMember(memberId);
+        Posting newPosting = makeNewPosting(postId);
+
+        if (likeRepository.findByMemberAndPosting(newMember, newPosting).isPresent()) {
+            // 이미 좋아요 했다면
+            return true;
+        }
+        return false;
+    }
+
+    // post에 대한 like 갯수 반환
+    public int countLikes(Long postId) {
+        Posting newPosting = makeNewPosting(postId);
+        return newPosting.getPostLikes();
+    }
+
+
+    @Transactional
+    public void delete(Long memberId, Long postId) {
+
+        boolean alreadyChecked = isAlreadyChecked(memberId, postId);
+        if (alreadyChecked == false)
+            return;
+
+        Member newMember = makeNewMember(memberId);
+        Posting newPosting = makeNewPosting(postId);
+        Likes findLike = makeNewLikes(newMember, newPosting);
+
+        Posting posting = makeNewPosting(findLike.getPosting().getPostId());
+        posting.setPostLikes(posting.getPostLikes() - 1);
+
+        likeRepository.deleteById(findLike.getLikeId());
+    }
+
+
+    private Member makeNewMember(Long memberId) {
+        Member newMember = memberRepository.findById(memberId)
                 .orElseThrow(() -> { // 영속화
                     return new IllegalArgumentException("글 찾기 실패 : memberId를 찾을 수 없습니다.");
                 });
-
-        Posting newPosting = postingRepository.findById(likeSaveDTO.getPostId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
-                });
-
-        // 이미 좋아요되어있으면 에러 반환
-        if (likeRepository.findByMemberAndPosting(newMember, newPosting).isPresent()) {
-            throw new IllegalArgumentException("이미 좋아요한 포스팅 입니다.");
-        }
-
-        Likes newLike = likeSaveDTO.toEntity(newMember, newPosting);
-        likeRepository.save(newLike);
-
-
-        Posting posting = postingRepository.findById(newLike.getPosting().getPostId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
-                });
-        posting.setPostLikes(posting.getPostLikes() + 1);
-        postingRepository.save(posting);
-
+        return newMember;
     }
 
-    @Transactional
-    public void delete(Long likeId) {
+    public Posting makeNewPosting(Long postId) {
+        Posting newPosting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });
+        return newPosting;
+    }
 
-        Likes findLike = likeRepository.findById(likeId)
+    public Likes makeNewLikes(Member member, Posting posting) {
+        Likes findLike = likeRepository.findByMemberAndPosting(member, posting)
                 .orElseThrow(() -> { // 영속화
                     return new IllegalArgumentException("글 찾기 실패 : likeId를 찾을 수 없습니다.");
                 });
-
-
-        Posting posting = postingRepository.findById(findLike.getPosting().getPostId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
-                });
-        posting.setPostLikes(posting.getPostLikes() - 1);
-
-        likeRepository.deleteById(likeId);
+        return findLike;
     }
 
 }

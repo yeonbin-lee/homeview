@@ -1,10 +1,6 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.dto.posting.LikeSaveDTO;
-import com.example.demo1.dto.posting.PostingContentResponseDTO;
-import com.example.demo1.dto.posting.PostingSaveDTO;
-import com.example.demo1.dto.posting.PostingResponseDTO;
-import com.example.demo1.dto.posting.PostingUpdateDTO;
+import com.example.demo1.dto.posting.*;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.service.LikeService;
 import com.example.demo1.service.PostingService;
@@ -99,19 +95,30 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
                 return new ResponseEntity<>(error.getDefaultMessage(), HttpStatus.BAD_REQUEST);
             }
         }
-        likeService.save(likeSaveDTO);
-        return new ResponseEntity(HttpStatus.CREATED);
+        boolean save = likeService.save(likeSaveDTO);
+        if (save == true) {
+            return new ResponseEntity(HttpStatus.CREATED); // 201 저장이 잘 됨
+        }
+        return new ResponseEntity(HttpStatus.ACCEPTED); // 202 이미 눌려서 저장 안됨
+    }
+
+    @PostMapping("/like/check")
+    public ResponseEntity checkLike(@RequestBody LikeSaveDTO likeSaveDTO) {  // 갯수 가져오기
+        boolean alreadyChecked = likeService.isAlreadyChecked(likeSaveDTO.getMemberId(), likeSaveDTO.getPostId());
+        int countLikes = likeService.countLikes(likeSaveDTO.getPostId());
+        if (alreadyChecked == false) {
+            return new ResponseEntity(countLikes, HttpStatus.CREATED); // 201 안눌렸으
+        }
+        return new ResponseEntity(countLikes, HttpStatus.ACCEPTED); // 202 눌렸으
     }
 
 
     // 좋아요 삭제
-    @GetMapping("/like/{likeId}/delete")
-    public ResponseEntity deleteLike(@PathVariable Long likeId) {
-        likeService.delete(likeId);
+    @PostMapping("/like/delete")  // 프론트에서 likeid 를 찾지 못함
+    public ResponseEntity deleteLike(@RequestBody LikeSaveDTO likeSaveDTO) {
+        likeService.delete(likeSaveDTO.getMemberId(), likeSaveDTO.getPostId());
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
-
-
 
     // 포스팅 삭제
     @GetMapping("/{postId}/delete")
@@ -120,6 +127,8 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
+
+    // 페이지 몇번까지 되는지 ?
     @GetMapping("/search")
     public Page<Posting> search(String keyword, @PageableDefault(sort = "postId", direction = Sort.Direction.DESC) Pageable pageable){
         Page<Posting> searchList = postingService.search(keyword, pageable);
@@ -127,3 +136,6 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
     }
 
 }
+
+
+

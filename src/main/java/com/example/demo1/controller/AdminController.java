@@ -34,7 +34,7 @@ public class AdminController {
         return info;
     }
 
-
+    // 어드민 체크 정삭동작하는지 확인
     @GetMapping("/healthcheck")
     public ResponseEntity<Integer> health_check(HttpSession session){
 
@@ -46,6 +46,7 @@ public class AdminController {
         }
     }
 
+    // 회원정보 불러오는거 Page로 변경하는게 나을지도 ?
     @GetMapping("/list")
     public List<MemberResponseDTO> getAllMembers(HttpSession session){
         Member info = checkAdmin(session);
@@ -56,16 +57,7 @@ public class AdminController {
         }
     }
 
-
-
-    @DeleteMapping("/posting/{post_id}")
-    public void deletePosting(@PathVariable Long post_id, HttpSession session){
-        Member info = checkAdmin(session);
-        if(info.getRole().equals("ADMIN")){
-            postingService.delete(post_id);
-        }
-    }
-
+    // 유저 삭제
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id, HttpSession session){
         Member info = checkAdmin(session);
@@ -74,8 +66,17 @@ public class AdminController {
         }
     }
 
+    // 글 삭제 --> 코멘트, 좋아요도 같이 삭제해야됨~ .. 변경필요
+    @DeleteMapping("/posting/{post_id}")
+    public void deletePosting(@PathVariable Long post_id, HttpSession session){
+        Member info = checkAdmin(session);
+        if(info.getRole().equals("ADMIN")){
+            postingService.delete(post_id);
+        }
+    }
 
-    // 글 삭제
+    // 사진 삭제
+    // 유저 차단(3일?) 가능하다면..
     // 리뷰 삭제
 
 }
