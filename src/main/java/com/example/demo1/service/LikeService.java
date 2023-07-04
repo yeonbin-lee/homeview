@@ -1,5 +1,6 @@
 package com.example.demo1.service;
 
+
 import com.example.demo1.dto.posting.LikeSaveDTO;
 import com.example.demo1.entity.Likes;
 import com.example.demo1.entity.Member;
@@ -10,6 +11,9 @@ import com.example.demo1.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class LikeService {
         return false;
     }
 
+
     // 이미 좋아요한 포스팅일 때
     public boolean isAlreadyChecked(Long memberId, Long postId) {
 
@@ -57,6 +62,20 @@ public class LikeService {
     public int countLikes(Long postId) {
         Posting newPosting = makeNewPosting(postId);
         return newPosting.getPostLikes();
+    }
+
+    public List<Likes> list(Long postId) {
+        Posting newPosting = makeNewPosting(postId);
+        List<Likes> list = likeRepository.findByPosting(newPosting);
+        return list;
+    }
+
+    @Transactional
+    public void deleteLikesinPosting(Long postId) {
+        List<Likes> list = list(postId);
+        for (Likes likes : list) {
+            likeRepository.deleteById(likes.getLikeId());
+        }
     }
 
 

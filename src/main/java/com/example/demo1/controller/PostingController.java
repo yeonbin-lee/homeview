@@ -1,9 +1,11 @@
 package com.example.demo1.controller;
 
 import com.example.demo1.dto.posting.*;
+import com.example.demo1.entity.Likes;
 import com.example.demo1.entity.Posting;
 import com.example.demo1.service.LikeService;
 import com.example.demo1.service.PostingService;
+import com.example.demo1.service.ReplyService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,11 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
 
     private PostingService postingService;
     private LikeService likeService;
+    private ReplyService replyService;
 
-
-    @GetMapping("/list")
-    public List<PostingResponseDTO> index() {
-        return postingService.list();
+    @GetMapping("/list/{categoryId}")
+    public List<PostingResponseDTO> index(@PathVariable Long categoryId) {
+        return postingService.list(categoryId);
     }
 
     // 새로운 작성 폼 열기
@@ -112,6 +114,12 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
         return new ResponseEntity(countLikes, HttpStatus.ACCEPTED); // 202 눌렸으
     }
 
+    /*@GetMapping("/like/list/{postId}")
+    public List<Likes> listOfLikes(@PathVariable Long postId) {
+        List<Likes> list = likeService.list(postId);
+        return list;
+    }*/
+
 
     // 좋아요 삭제
     @PostMapping("/like/delete")  // 프론트에서 likeid 를 찾지 못함
@@ -123,12 +131,12 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
     // 포스팅 삭제
     @GetMapping("/{postId}/delete")
     public ResponseEntity deleteById(@PathVariable Long postId) {
+        likeService.deleteLikesinPosting(postId);
+        replyService.deleteRepliesinPosting(postId);
         postingService.delete(postId);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-
-    // 페이지 몇번까지 되는지 ?
     @GetMapping("/search")
     public Page<Posting> search(String keyword, @PageableDefault(sort = "postId", direction = Sort.Direction.DESC) Pageable pageable){
         Page<Posting> searchList = postingService.search(keyword, pageable);
@@ -136,6 +144,3 @@ public class PostingController { // 스테이터스로만 보내는걸로. 문�
     }
 
 }
-
-
-

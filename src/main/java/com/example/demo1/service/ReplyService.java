@@ -63,9 +63,16 @@ public class ReplyService {
 
     // 댓글 목록
     public List<ReplyResponseDTO> list(Long postId) {
-        List<Reply> replies = replyRepository.findByPostId(postId);
+/*        Posting newPosting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });
+        log.info(String.valueOf(newPosting.getPostId()));*/
+
+        List<Reply> replies = replyRepository.findByPostId(postId); // 여기서 필터링이 제대로 안되는 것 같다
         List<ReplyResponseDTO> replyResponseList = new ArrayList<>();
         for (Reply reply : replies) {
+            log.info(String.valueOf(reply.getPosting().getPostId()));
             ReplyResponseDTO replyResponseDTO = ReplyResponseDTO.builder()
                     .commentId(reply.getCommentId())
                     .postId(reply.getPosting().getPostId())
@@ -79,8 +86,6 @@ public class ReplyService {
         }
         return replyResponseList;
     }
-
-
 
 
     // 댓글 상세보기 -> 수정할 때 사용
@@ -100,6 +105,23 @@ public class ReplyService {
                 .orElseThrow(() -> { // 영속화
                     return new IllegalArgumentException("글 상세보기 실패 : postId를 찾을 수 없습니다.");
                 });
+    }
+
+    public List<Reply> listofPosting(Long postId) {
+/*        Posting newPosting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });*/
+        List<Reply> list = replyRepository.findByPostId(postId);
+        return list;
+    }
+
+    @Transactional
+    public void deleteRepliesinPosting(Long postId) {
+        List<Reply> list = listofPosting(postId);
+        for (Reply replies : list) {
+            replyRepository.deleteById(replies.getCommentId());
+        }
     }
 
 

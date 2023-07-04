@@ -1,7 +1,7 @@
 package com.example.demo1.dto.posting;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,14 +16,14 @@ public class PostingUpdateDTO {
     @Pattern(regexp = "^.{2,500}$", message = "글자수는 2자 이상 500자 이하로 작성해주세요")
     private String content;
 
-    private String memberName;
+    private Long categoryId;
 
     public PostingUpdateDTO() {
     }
 
-    public PostingUpdateDTO(String title, String content, String memberName) {
+    public PostingUpdateDTO(String title, String content, String memberName, Long categoryId) {
         this.title = title;
         this.content = content;
-        this.memberName = memberName;
+        this.categoryId = categoryId;
     }
 }

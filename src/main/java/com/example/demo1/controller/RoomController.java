@@ -25,14 +25,14 @@ public class RoomController {
         roomService.addRoom(roomDTO);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteRoom(Long room_id){
+    @DeleteMapping("/delete/{room_id}")
+    public void deleteRoom(@PathVariable Long room_id){
         roomService.deleteRoom(room_id);
     }
 
     // 방 정보 조회
-    @GetMapping("/info")
-    public Room infoRoom(Long room_id){
+    @GetMapping("/info/{room_id}")
+    public Room infoRoom(@PathVariable Long room_id){
         try {
             return roomService.roomInfo(room_id);
         } catch (Exception e) {
