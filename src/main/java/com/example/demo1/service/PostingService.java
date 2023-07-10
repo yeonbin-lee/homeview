@@ -1,8 +1,8 @@
 package com.example.demo1.service;
 
 import com.example.demo1.dto.posting.PostingContentResponseDTO;
-import com.example.demo1.dto.posting.PostingSaveDTO;
 import com.example.demo1.dto.posting.PostingResponseDTO;
+import com.example.demo1.dto.posting.PostingSaveDTO;
 import com.example.demo1.dto.posting.PostingUpdateDTO;
 import com.example.demo1.entity.Category;
 import com.example.demo1.entity.Member;
@@ -10,14 +10,18 @@ import com.example.demo1.entity.Posting;
 import com.example.demo1.repository.CategoryRepository;
 import com.example.demo1.repository.MemberRepository;
 import com.example.demo1.repository.PostingRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,43 +34,23 @@ public class PostingService {
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
 
+
+
     @Transactional
-    public Posting save(PostingSaveDTO postingSaveDTO) {
+    public Posting save(PostingSaveDTO postingSaveDTO, HttpSession session) {
 
-        Member newMember = memberRepository.findById(postingSaveDTO.getMemberId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : memberId를 찾을 수 없습니다.");
-                });
-
-        Category newCategory = categoryRepository.findById(postingSaveDTO.getCategoryId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : categoryId를 찾을 수 없습니다.");
-                });
-
-        /*Posting newPosting = new Posting(
-                newMember,
-                postingSaveDTO.getTitle(),
-                postingSaveDTO.getContent(),
-                postingSaveDTO.getPostTime(),
-                postingSaveDTO.getPostHits(),
-                postingSaveDTO.getPostLikes());*/
+        Member newMember = getInfo(session);
+        Category newCategory = makeNewCategory(postingSaveDTO.getCategoryId());
 
         Posting newPosting = postingSaveDTO.toEntity(newMember, newCategory);
-
         return postingRepository.save(newPosting);
     }
 
     @Transactional
     public void update(Long postId, PostingUpdateDTO updateParam) {
-        Posting posting = postingRepository.findById(postId)
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
-                });
 
-        Category category = categoryRepository.findById(updateParam.getCategoryId())
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : categoryId를 찾을 수 없습니다.");
-                });
+        Posting posting = makeNewPosting(postId);
+        Category category = makeNewCategory(updateParam.getCategoryId());
 
         posting.setTitle(updateParam.getTitle());
         posting.setContent(updateParam.getContent());
@@ -74,62 +58,46 @@ public class PostingService {
         postingRepository.save(posting);
     }
 
-    public List<PostingResponseDTO> allList() {
+
+    public Page<PostingResponseDTO> search(String keyword, Long categoryId, Pageable pageable){
+
+        if (categoryId == 0) {
+            List<Posting> postsListAll = postingRepository.findByTitleContaining(keyword);
+            log.info(String.valueOf(postsListAll.size()));
+
+            Page<PostingResponseDTO> postingResponseAll = listtoPage(postingListtoPostingResponseList(postsListAll), pageable);
+            return postingResponseAll;
+        }
+        else if (categoryId < 5){
+            Category category = makeNewCategory(categoryId);
+            List<Posting> postsList = postingRepository.findByTitleContainingAndCategory(keyword, category);
+            log.info(String.valueOf(postsList.size()));
+            Page<PostingResponseDTO> postingResponseError = listtoPage(postingListtoPostingResponseList(postsList), pageable);
+            return postingResponseError;
+        }
+        return null;
+
+    }
+
+
+    public Page<PostingResponseDTO> allList(Pageable pageable) { // page로 반환
 
         List<Posting> postings = postingRepository.findAll();
-        List<PostingResponseDTO> postingResponseList = new ArrayList<>(); // 여기서 필터링이 제대로 안되는 것 같다
-        for (Posting posting : postings) {
-            log.info(posting.getCategory().getName());
-            PostingResponseDTO postingResponseDTO = PostingResponseDTO.builder()
-                    .postId(posting.getPostId())
-                    .categoryId(posting.getCategory().getCategoryId())
-                    .memberId(posting.getMember().getId())
-                    .memberNickname(posting.getMember().getNickname())
-                    .title(posting.getTitle())
-                    .postTime(posting.getPostTime())
-                    .postHits(posting.getPostHits())
-                    .postLikes(posting.getPostLikes())
-                    .build();
-
-            postingResponseList.add(postingResponseDTO);
-        }
-        return postingResponseList;
+        Page<PostingResponseDTO> postingResponse = listtoPage(postingListtoPostingResponseList(postings), pageable);
+        return postingResponse;
     }
 
     // 글 목록
-    public List<PostingResponseDTO> list(Long categoryId) {
+    public Page<PostingResponseDTO> list(Long categoryId, Pageable pageable) { // page로 반환
 
         if (categoryId == 0) {
-            return allList();
+            return allList(pageable);
         }
 
-/*        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : categoryId를 찾을 수 없습니다.");
-                });
-
-        log.info(category.getName());*/
-
-        List<Posting> postings = postingRepository.findByCategoryId(categoryId); // 여기서 필터링이 제대로 안되는 것 같다
-        List<PostingResponseDTO> postingResponseList = new ArrayList<>();
-        for (Posting posting : postings) {
-            log.info(posting.getCategory().getName());
-            PostingResponseDTO postingResponseDTO = PostingResponseDTO.builder()
-                    .postId(posting.getPostId())
-                    .categoryId(posting.getCategory().getCategoryId())
-                    .memberId(posting.getMember().getId())
-                    .memberNickname(posting.getMember().getNickname())
-                    .title(posting.getTitle())
-                    .postTime(posting.getPostTime())
-                    .postHits(posting.getPostHits())
-                    .postLikes(posting.getPostLikes())
-                    .build();
-
-            postingResponseList.add(postingResponseDTO);
-        }
-        return postingResponseList;
+        List<Posting> postings = postingRepository.findByCategoryId(categoryId);
+        Page<PostingResponseDTO> postingResponse = listtoPage(postingListtoPostingResponseList(postings), pageable);
+        return postingResponse;
     }
-
 
     // 글 상세보기
     public PostingContentResponseDTO content(Long postId) {
@@ -139,6 +107,7 @@ public class PostingService {
         Optional<PostingContentResponseDTO> postingResponse = Optional.ofNullable(PostingContentResponseDTO.builder()
                 .postId(posting.get().getPostId())
                 .memberId(posting.get().getMember().getId())
+                .categoryId(posting.get().getCategory().getCategoryId())
                 .memberNickname(posting.get().getMember().getNickname())
                 .title(posting.get().getTitle())
                 .content(posting.get().getContent())
@@ -155,10 +124,7 @@ public class PostingService {
 
     public void updatePostHits(Long postId) {
 
-        Posting posting = postingRepository.findById(postId)
-                .orElseThrow(() -> { // 영속화
-                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
-                });
+        Posting posting = makeNewPosting(postId);
         posting.setPostHits(posting.getPostHits() + 1);
         postingRepository.save(posting);
     }
@@ -169,9 +135,66 @@ public class PostingService {
         postingRepository.deleteById(postId);
     }
 
-    @Transactional
-    public Page<Posting> search(String keyword, Pageable pageable){
-        Page<Posting> postsList = postingRepository.findByTitleContaining(keyword, pageable);
-        return postsList;
+
+
+    public boolean checkIdentification(Long postId, HttpSession session) {
+        Posting posting = makeNewPosting(postId);
+        Member member = getInfo(session);
+
+        if (posting.getMember().getId() == member.getId()) {
+            return true;
+        }
+        return false;
+    }
+
+
+    private Member getInfo(HttpSession session){
+        String email = (String) session.getAttribute("email");
+        Optional<Member> member = memberRepository.findByEmail(email);
+        return member.get();
+    }
+
+    private Posting makeNewPosting(Long postId) {
+        Posting newPosting = postingRepository.findById(postId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : postId를 찾을 수 없습니다.");
+                });
+        return newPosting;
+    }
+
+    private Category makeNewCategory(Long categoryId) {
+        Category newCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> { // 영속화
+                    return new IllegalArgumentException("글 찾기 실패 : categoryId를 찾을 수 없습니다.");
+                });
+        return newCategory;
+    }
+
+    private List<PostingResponseDTO> postingListtoPostingResponseList(List<Posting> postings){
+
+        Collections.reverse(postings);
+        List<PostingResponseDTO> postingResponseList = new ArrayList<>();
+        for (Posting posting : postings) {
+            PostingResponseDTO postingResponseDTO = PostingResponseDTO.builder()
+                    .postId(posting.getPostId())
+                    .categoryId(posting.getCategory().getCategoryId())
+                    .memberId(posting.getMember().getId())
+                    .memberNickname(posting.getMember().getNickname())
+                    .title(posting.getTitle())
+                    .postTime(posting.getPostTime())
+                    .postHits(posting.getPostHits())
+                    .postLikes(posting.getPostLikes())
+                    .build();
+
+            postingResponseList.add(postingResponseDTO);
+        }
+        return postingResponseList;
+    }
+
+    private Page<PostingResponseDTO> listtoPage(List<PostingResponseDTO> postingResponse, Pageable pageable) {
+        int start = (int)pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), postingResponse.size());
+        Page<PostingResponseDTO> newPostings = new PageImpl<>(postingResponse.subList(start,end), pageable, postingResponse.size());
+        return newPostings;
     }
 }

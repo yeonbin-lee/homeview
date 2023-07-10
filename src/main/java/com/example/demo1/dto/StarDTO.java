@@ -1,5 +1,8 @@
 package com.example.demo1.dto;
 
+import com.example.demo1.entity.Member;
+import com.example.demo1.entity.Room;
+import com.example.demo1.entity.Star;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,11 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StarDTO {
 
-    private Long member_id;
-    private Long room_id;
+    private Member member;
+    private Room room;
 
-    public StarDTO(Long member_id, Long room_id){
-        this.member_id = member_id;
-        this.room_id = room_id;
+    public Star toEntity(){
+        return Star.builder()
+                .member(member)
+                .room(room)
+                .build();
     }
+
 }

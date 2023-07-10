@@ -44,7 +44,6 @@ public class SignupDTO {
                     .password(password)
                     .role("ROLE_MEMBER")
                     .build();
-
         }
 
 //        @Builder

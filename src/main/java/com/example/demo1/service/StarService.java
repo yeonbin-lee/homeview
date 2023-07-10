@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,37 +25,64 @@ public class StarService {
     private final RoomRepository roomRepository;
 
     /*관심목록 추가*/
+//    @Transactional
+//    public boolean starRoom(StarDTO starDTO){
+//        Member member = starDTO.getMember();
+//        Room room = starDTO.getRoom();
+//
+//        if(isNotStar(member,room)){
+//            starRepository.save(starDTO.toEntity());
+//            return true;
+//        }else{
+//            Star star = starRepository.findByMemberAndRoom(member, room).get();
+//            starRepository.delete(star);
+//            return false;
+//        }
+//    }
+
     @Transactional
-    public void starRoom(StarDTO starDTO) throws Exception{
-        Member member = memberRepository.findById(starDTO.getMember_id())
-                .orElseThrow(() -> new NotFoundException("해당 유저를 찾을 수 없습니다."));
-        Room room = roomRepository.findById(starDTO.getRoom_id())
-                .orElseThrow(() -> new NotFoundException("해당 방을 찾을 수 없습니다."));
+    public boolean starRoom(StarDTO starDTO){
+        Member member = starDTO.getMember();
+        Room room = starDTO.getRoom();
 
-        if(starRepository.findByMemberAndRoom(member, room).isPresent()){
-            throw new Exception();
+        if(isNotStar(member,room)){
+            starRepository.save(starDTO.toEntity());
+            return true;
+        }else{
+            throw new IllegalArgumentException("이미 처리된 요청입니다.");
+            //return false;
         }
-
-        Star star = Star.builder()
-                .member(member)
-                .room(room)
-                .build();
-
-        starRepository.save(star);
     }
 
-    /*관심목록 삭제*/
-    @Transactional
-    public void deleteStar(StarDTO starDTO) throws Exception{
-        Member member = memberRepository.findById(starDTO.getMember_id())
-                .orElseThrow(() -> new NotFoundException("해당 유저를 찾을 수 없습니다."));
-        Room room = roomRepository.findById(starDTO.getRoom_id())
-                .orElseThrow(() -> new NotFoundException("해당 방을 찾을 수 없습니다."));
-        Star star = starRepository.findByMemberAndRoom(member, room)
-                        .orElseThrow(() -> new NotFoundException("해당 관심목록을 찾을 수 없습니다."));
+    /*이미 관심목록인지 체크*/
+    private boolean isNotStar(Member member, Room room){
+        return starRepository.findByMemberAndRoom(member, room).isEmpty();
+    }
 
-        starRepository.delete(star);
+    public boolean deleteStar(StarDTO starDTO){
+        Member member = starDTO.getMember();
+        Room room = starDTO.getRoom();
 
+        if(isNotStar(member,room)){
+            throw new IllegalArgumentException("이미 처리된 요청입니다.");
+        }else{
+            Star star = starRepository.findByMemberAndRoom(member, room).get();
+            starRepository.delete(star);
+            return true;
+        }
+
+    }
+
+    /*존재하면 true, 존재하지않으면 false*/
+    public boolean checkStar(StarDTO starDTO){
+        Member member = starDTO.getMember();
+        Room room = starDTO.getRoom();
+
+        if(isNotStar(member,room)){
+            return false;
+        }else{
+            return true;
+        }
     }
 
 }

@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.repository.cdi.Eager;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
@@ -27,7 +29,8 @@ public class Star {
     private Room room;
 
     @Builder
-    public Star(Member member, Room room){
+    public Star(Long star_id, Member member, Room room){
+        this.star_id = star_id;
         this.member = member;
         this.room = room;
     }
