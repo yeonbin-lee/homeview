@@ -1,8 +1,6 @@
 package com.example.demo1.dto.member;
 
 import com.example.demo1.entity.Member;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

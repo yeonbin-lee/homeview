@@ -1,6 +1,5 @@
-package com.example.demo1.dto;
+package com.example.demo1.dto.room;
 
-import com.example.demo1.entity.Room;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,4 +12,8 @@ public class RoomCheckDTO {
     private String old_address;
     private String building;
 
+    public RoomCheckDTO(String old_address, String building) {
+        this.old_address = old_address;
+        this.building = building;
+    }
 }

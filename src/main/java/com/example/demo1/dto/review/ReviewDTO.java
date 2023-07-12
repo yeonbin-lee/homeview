@@ -1,6 +1,5 @@
 package com.example.demo1.dto.review;
 
-import com.example.demo1.dto.RoomDTO;
 import com.example.demo1.entity.Member;
 import com.example.demo1.entity.Review;
 import com.example.demo1.entity.Room;

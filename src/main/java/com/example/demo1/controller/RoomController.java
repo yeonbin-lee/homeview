@@ -1,17 +1,14 @@
 package com.example.demo1.controller;
 
-import com.example.demo1.dto.RoomCheckDTO;
-import com.example.demo1.dto.RoomDTO;
+import com.example.demo1.dto.room.RoomCheckDTO;
 import com.example.demo1.entity.Room;
 import com.example.demo1.service.RoomService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -33,7 +30,7 @@ public class RoomController {
 //        }
 //    }
 
-    @GetMapping("/check") // 방이 존재하지않으면 201코드, 존재하면 room 반환
+    @GetMapping("/check")
     public ResponseEntity check(@RequestBody RoomCheckDTO roomCheckDTO){
         try{
             return ResponseEntity.ok(roomService.check(roomCheckDTO));
@@ -42,12 +39,11 @@ public class RoomController {
         }
     }
 
-
     // 추가성공시 true, 이미 존재하면 false
     @PostMapping("/add")
-    public ResponseEntity addRoom(@RequestBody RoomDTO roomDTO){
+    public ResponseEntity addRoom(Room room){
         try{
-            return ResponseEntity.ok(roomService.addRoom(roomDTO));
+            return ResponseEntity.ok(roomService.addRoom(room));
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
