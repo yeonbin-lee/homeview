@@ -25,6 +25,7 @@ public class ReviewService {
     private final MemberRepository memberRepository;
     private final RoomRepository roomRepository;
     private final S3UploadService s3UploadService;
+    private final RoomService roomService;
 
     public ReviewResponseDTO findReviewById(Long review_id){
         Review review = reviewRepository.findById(review_id).get();
@@ -85,11 +86,24 @@ public class ReviewService {
     @Transactional
     public void deleteReview(Long review_id){
         Review review = reviewRepository.findById(review_id).get();
+
+        // 이미지가 존재하면 이미지도 삭제
         if(review.getUrl().isEmpty()){
             reviewRepository.deleteById(review_id);
         } else {
             s3UploadService.deleteImage(review.getUrl());
             reviewRepository.deleteById(review_id);
+        }
+
+        Long room_id = review.getRoom().getRoom_id();
+
+        // 해당 방에 리뷰가 하나도 없다면 방 삭제
+        if(findReviewByRoomId(room_id).isEmpty()){
+            try {
+                roomService.deleteRoom(room_id);
+            } catch (Exception e){
+                throw new IllegalArgumentException("잘못된 요청입니다.");
+            }
         }
     }
 

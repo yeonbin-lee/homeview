@@ -99,21 +99,14 @@ public class AdminController {
 
     // 방 삭제 -> 관련된 리뷰, 사진 삭제/ 성공시 200, 실패시 400
     @DeleteMapping("/room/{room_id}")
-    public ResponseEntity deleteRoom(@PathVariable Long room_id, HttpSession session){
+    public void deleteRoom(@PathVariable Long room_id, HttpSession session){
         Member member = checkAdmin(session);
         if(member.getRole().equals("ADMIN")){
             List<Review> reviews = reviewService.findReviewByRoomId(room_id);
             for (Review review : reviews) {
                 reviewService.deleteReview(review.getReview_id());
             }
-            try {
                 roomService.deleteRoom(room_id);
-                return ResponseEntity.ok(HttpStatus.OK);
-            } catch (Exception e){
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-            }
-        } else{
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

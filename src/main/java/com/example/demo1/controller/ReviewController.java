@@ -71,15 +71,11 @@ public class ReviewController {
     @DeleteMapping("/delete/{review_id}")
     public ResponseEntity deleteReview(@PathVariable Long review_id, HttpSession httpSession) {
 
-        Member member = memberService.getInfo(String.valueOf(httpSession));
+        Member member = memberService.getMemberBySession(httpSession);
         Review review = reviewService.findReview(review_id);
 
         if(review.getMember().equals(member)){
             reviewService.deleteReview(review_id);
-            Long room_id = review.getRoom().getRoom_id();
-            if(reviewService.findReviewByRoomId(room_id).isEmpty()){
-                roomService.deleteRoom(room_id);
-            }
             return ResponseEntity.ok(HttpStatus.OK);
         } else{
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
