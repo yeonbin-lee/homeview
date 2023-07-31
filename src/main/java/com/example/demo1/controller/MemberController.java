@@ -65,7 +65,9 @@ public class MemberController {
         } else {
             //login 성공
             session.setAttribute("email", result);
-            session.setMaxInactiveInterval(1800); // 60s * 30 (30분)
+            //session.setMaxInactiveInterval(1800); // 60s * 30 (30분)
+            //프론트에서 세션 시간을 지정하고 싶다해서 loginDTO에서 그 값을 받아와서 사용
+            session.setMaxInactiveInterval(loginDTO.getSession_time() * 60); // 분단위로 받아서 반환
 
             // member 객체
             Member info = memberService.getInfo(result);

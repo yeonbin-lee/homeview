@@ -8,7 +8,6 @@ import lombok.Setter;
 
 
 @Getter
-@Builder
 @NoArgsConstructor
 @Setter
 public class LoginDTO {
@@ -17,6 +16,8 @@ public class LoginDTO {
     private String email;
 
     private String password;
+
+    private Integer session_time;
 
     @Builder
     public LoginDTO(String email, String password){

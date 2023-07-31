@@ -79,6 +79,12 @@ public class PostingService {
 
     }
 
+    // 어드민에서 모든 포스팅 리스트로 가져오게 하는 것
+    public List<PostingContentResponseDTO> allPostingsinAdmin() {
+        List<Posting> postings = postingRepository.findAll();
+        return postingListtoPostingContentResponseList(postings);
+    }
+
 
     public Page<PostingResponseDTO> allList(Pageable pageable) { // page로 반환
 
@@ -94,7 +100,9 @@ public class PostingService {
             return allList(pageable);
         }
 
-        List<Posting> postings = postingRepository.findByCategoryId(categoryId);
+        Category category = makeNewCategory(categoryId);
+
+        List<Posting> postings = postingRepository.findByCategory(category);
         Page<PostingResponseDTO> postingResponse = listtoPage(postingListtoPostingResponseList(postings), pageable);
         return postingResponse;
     }
@@ -181,6 +189,29 @@ public class PostingService {
                     .memberId(posting.getMember().getId())
                     .memberNickname(posting.getMember().getNickname())
                     .title(posting.getTitle())
+                    .postTime(posting.getPostTime())
+                    .postHits(posting.getPostHits())
+                    .postLikes(posting.getPostLikes())
+                    .build();
+
+            postingResponseList.add(postingResponseDTO);
+        }
+        return postingResponseList;
+    }
+
+
+    private List<PostingContentResponseDTO> postingListtoPostingContentResponseList(List<Posting> postings){
+
+        Collections.reverse(postings);
+        List<PostingContentResponseDTO> postingResponseList = new ArrayList<>();
+        for (Posting posting : postings) {
+            PostingContentResponseDTO postingResponseDTO = PostingContentResponseDTO.builder()
+                    .postId(posting.getPostId())
+                    .categoryId(posting.getCategory().getCategoryId())
+                    .memberId(posting.getMember().getId())
+                    .memberNickname(posting.getMember().getNickname())
+                    .title(posting.getTitle())
+                    .content(posting.getContent())
                     .postTime(posting.getPostTime())
                     .postHits(posting.getPostHits())
                     .postLikes(posting.getPostLikes())
