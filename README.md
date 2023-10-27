@@ -1,7 +1,7 @@
-## homeview
+# homeview
 
-# 노션(Notion)
+## 노션(Notion)
 : https://bitter-smelt-d56.notion.site/HOMEVIEW-5f49fa1c08fe4f839bd201e47ac78001
 
-# 완성본 영상(final result)
+## 완성본 영상(final result video)
 : https://youtu.be/ffBZl9TwyDI
