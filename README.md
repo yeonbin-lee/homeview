@@ -23,7 +23,12 @@
 * Database: MySQL
 * Server: AWS(EC2, RDS, S3)
 
-## 3. Main Function
+## 3. Architecture
+![image](https://github.com/user-attachments/assets/9ab7ac7d-4768-4cc6-8340-2c0924a86c90)
+
+
+
+## 4. Main Function
 ### - User Function
 - [x] 회원가입 (이메일 인증 필요)
 - [x] 로그인(Session)
@@ -43,11 +48,16 @@
 - [x] 좋아요 한 포스팅 조회
 - [x] 댓글 남긴 포스팅 조회
 
-## 4. (Technical) Difficulties
+## 5. (Technical) Difficulties
 - [x] 익숙하지 않은 프레임워크
 - [x] 부족한 협업 경험
 - [x] 코드 구조화 문제, 리팩토링
       
 
-# 5. Final Result Video
+## 6. Final Result Video
 https://youtu.be/ffBZl9TwyDI
+
+## 7. Personal Diffifulties
+게시글 사진 첨부 시, S3에 저장되지 않은 사진 URL을 게시글의 컬럼으로 저장 시 AmazonS3Exception 이 발생했다.
+당시에 사진을 첨부하고 S3에서 저장한 뒤, 저장된 URL을 포함한 게시글을 저장하는 방식으로 수정하였다.
+이후, 해결 방법을 알아냈는데 사진 업로드 시, 무조건 저장을 하고 일정 기간마다 사용하지 않는 URL은 삭제하는 방식으로 변경하면 된다.
